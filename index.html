@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our First Chapter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap');
+
+:root{
+  --ivory:#FAF5EF;
+  --ivory-deep:#F3ECE2;
+  --blush:#F3DCE0;
+  --blush-soft:#F8E9EC;
+  --champagne:#EAD9B8;
+  --gold:#C7A662;
+  --gold-deep:#AD8A48;
+  --charcoal:#2B2622;
+  --charcoal-soft:#5C5450;
+  --rose-deep:#B5717E;
+  --glass: rgba(255,255,255,0.45);
+  --glass-border: rgba(255,255,255,0.6);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+html,body{
+  height:100%;
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(243,220,224,0.5), transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(234,217,184,0.5), transparent 55%),
+    var(--ivory);
+  color:var(--charcoal);
+  font-family:'Jost', sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+::selection{ background:var(--gold); color:#fff; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+}
+
+h1,h2,h3,.serif{ font-family:'Cormorant Garamond', serif; font-weight:500; }
+
+.eyebrow{
+  font-family:'Jost', sans-serif;
+  font-size:11px;
+  letter-spacing:0.32em;
+  text-transform:uppercase;
+  color:var(--gold-deep);
+  font-weight:500;
+}
+
+a, button{ font-family:inherit; }
+
+/* ===================== LOADING SCREEN ===================== */
+#loader{
+  position:fixed; inset:0; z-index:9999;
+  background:var(--ivory);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column;
+  transition:opacity 1s ease, visibility 1s ease;
+}
+#loader.hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+
+.monogram-wrap{
+  position:relative;
+  width:180px; height:180px;
+  display:flex; align-items:center; justify-content:center;
+}
+.mono-ring{
+  position:absolute; inset:0;
+  border-radius:50%;
+  border:1px solid var(--gold);
+  opacity:0;
+  animation: ringExpand 2.2s ease-out forwards;
+}
+.mono-ring.r2{ animation-delay:0.25s; }
+@keyframes ringExpand{
+  0%{ transform:scale(0.6); opacity:0; }
+  30%{ opacity:0.7; }
+  100%{ transform:scale(1.15); opacity:0; }
+}
+.monogram-text{
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:44px;
+  color:var(--charcoal);
+  letter-spacing:0.06em;
+  opacity:0;
+  animation: fadeUp 1.2s ease forwards 0.4s;
+}
+.monogram-text .amp{
+  color:var(--rose-deep);
+  margin:0 10px;
+  font-size:30px;
+  vertical-align:2px;
+}
+@keyframes fadeUp{
+  0%{ opacity:0; transform:translateY(10px); }
+  100%{ opacity:1; transform:translateY(0); }
+}
+.loader-sub{
+  margin-top:18px;
+  font-size:11px;
+  letter-spacing:0.35em;
+  text-transform:uppercase;
+  color:var(--charcoal-soft);
+  opacity:0;
+  animation: fadeUp 1s ease forwards 1s;
+}
+.loader-sparkle{
+  position:absolute;
+  width:4px; height:4px;
+  background:var(--gold);
+  border-radius:50%;
+  opacity:0;
+  animation: sparklePop 2.4s ease-in-out infinite;
+}
+@keyframes sparklePop{
+  0%,100%{ opacity:0; transform:scale(0.4); }
+  50%{ opacity:0.9; transform:scale(1.2); }
+}
+
+/* ===================== SPARKLE FIELD (ambient) ===================== */
+.sparkle-field{ position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+.sparkle{
+  position:absolute;
+  width:3px; height:3px;
+  border-radius:50%;
+  background:var(--gold);
+  opacity:0;
+  animation: twinkle 6s ease-in-out infinite;
+}
+@keyframes twinkle{
+  0%,100%{ opacity:0; transform:scale(0.5); }
+  50%{ opacity:0.55; transform:scale(1.3); }
+}
+
+/* ===================== NAV ===================== */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:26px 5vw;
+  background:linear-gradient(to bottom, rgba(250,245,239,0.92), rgba(250,245,239,0.0));
+  backdrop-filter:blur(2px);
+}
+.brand{
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:22px;
+  letter-spacing:0.02em;
+  color:var(--charcoal);
+  cursor:pointer;
+}
+.brand .amp{ color:var(--rose-deep); }
+
+nav.tabs{
+  display:flex;
+  gap:clamp(14px, 2.4vw, 34px);
+}
+nav.tabs button{
+  background:none; border:none; cursor:pointer;
+  font-size:11.5px; letter-spacing:0.22em; text-transform:uppercase;
+  color:var(--charcoal-soft);
+  padding:6px 2px;
+  position:relative;
+  transition:color 0.4s ease;
+}
+nav.tabs button::after{
+  content:'';
+  position:absolute; left:0; right:0; bottom:-4px;
+  height:1px; background:var(--gold);
+  transform:scaleX(0); transform-origin:center;
+  transition:transform 0.45s cubic-bezier(.6,.2,.2,1);
+}
+nav.tabs button.active{ color:var(--charcoal); }
+nav.tabs button.active::after{ transform:scaleX(1); }
+nav.tabs button:hover{ color:var(--rose-deep); }
+
+.nav-toggle{ display:none; background:none; border:none; cursor:pointer; }
+.nav-toggle span{ display:block; width:22px; height:1px; background:var(--charcoal); margin:5px 0; }
+
+@media (max-width:820px){
+  nav.tabs{
+    position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px);
+    background:var(--ivory-deep);
+    flex-direction:column; align-items:flex-start;
+    padding:100px 36px;
+    gap:26px;
+    transform:translateX(100%);
+    transition:transform 0.5s cubic-bezier(.6,.2,.2,1);
+    box-shadow:-10px 0 40px rgba(0,0,0,0.06);
+  }
+  nav.tabs.open{ transform:translateX(0); }
+  .nav-toggle{ display:block; z-index:600; }
+}
+
+/* ===================== PAGE STRUCTURE ===================== */
+main{ position:relative; z-index:2; min-height:100vh; }
+.page{
+  display:none;
+  min-height:100vh;
+  padding:150px 8vw 100px;
+  opacity:0;
+  transform:translateY(18px);
+}
+.page.active{
+  display:block;
+  animation: pageIn 0.9s cubic-bezier(.2,.7,.2,1) forwards;
+}
+@keyframes pageIn{
+  0%{ opacity:0; transform:translateY(18px); }
+  100%{ opacity:1; transform:translateY(0); }
+}
+
+.page-head{ text-align:center; max-width:640px; margin:0 auto 64px; }
+.page-head h1{ font-size:clamp(34px,5vw,54px); font-style:italic; margin-top:14px; color:var(--charcoal); }
+.divider{
+  width:64px; height:1px; background:var(--gold); margin:22px auto 0;
+  position:relative;
+}
+.divider::after{
+  content:'✦'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  color:var(--gold); background:var(--ivory); font-size:11px; padding:0 8px;
+}
+
+/* glass card */
+.glass{
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(14px);
+  border-radius:18px;
+  box-shadow:0 20px 60px -30px rgba(43,38,34,0.35);
+}
+
+/* ===================== HOME ===================== */
+#home .hero{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  padding-top:20px;
+}
+#home .hero .eyebrow{ margin-bottom:18px; }
+#home .hero h1{
+  font-size:clamp(40px,7vw,84px);
+  line-height:1.08;
+  font-style:italic;
+  max-width:900px;
+}
+#home .hero p.lede{
+  max-width:520px; margin:26px auto 0;
+  color:var(--charcoal-soft);
+  font-weight:300; font-size:16px; line-height:1.8;
+}
+.date-chip{
+  display:inline-flex; align-items:center; gap:10px;
+  margin-top:34px; padding:12px 26px;
+  border-radius:999px;
+  font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+  color:var(--charcoal);
+}
+.date-chip .dot{ width:5px; height:5px; border-radius:50%; background:var(--rose-deep); }
+
+.home-grid{
+  margin-top:90px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:26px;
+  max-width:1000px;
+  margin-left:auto; margin-right:auto;
+}
+.home-tile{
+  padding:38px 26px;
+  text-align:center;
+  cursor:pointer;
+  transition:transform 0.5s cubic-bezier(.2,.7,.2,1), box-shadow 0.5s;
+}
+.home-tile:hover{ transform:translateY(-8px); }
+.home-tile .icon{ font-size:26px; color:var(--rose-deep); margin-bottom:14px; display:block; }
+.home-tile h3{ font-size:22px; font-style:italic; margin-bottom:8px; }
+.home-tile p{ font-size:13px; color:var(--charcoal-soft); font-weight:300; line-height:1.6; }
+
+@media (max-width:760px){
+  .home-grid{ grid-template-columns:1fr; }
+}
+
+/* ===================== LETTER ===================== */
+.letter-stage{
+  max-width:640px; margin:0 auto;
+  display:flex; flex-direction:column; align-items:center;
+}
+.envelope{
+  width:min(90vw,380px); height:250px;
+  position:relative; cursor:pointer;
+  margin-bottom:20px;
+}
+.env-back{
+  position:absolute; inset:0;
+  background:linear-gradient(135deg, var(--blush-soft), var(--champagne));
+  border-radius:6px;
+  box-shadow:0 30px 60px -25px rgba(43,38,34,0.4);
+}
+.env-flap{
+  position:absolute; top:0; left:0; right:0; height:50%;
+  background:linear-gradient(160deg, var(--blush), var(--champagne));
+  clip-path:polygon(0 0, 100% 0, 50% 100%);
+  transform-origin:top;
+  transition:transform 1s cubic-bezier(.6,.1,.2,1);
+  border-radius:6px 6px 0 0;
+  z-index:3;
+}
+.envelope.open .env-flap{ transform:rotateX(180deg); }
+.env-shadow{
+  position:absolute; inset:6% 8%; top:20%;
+  background:var(--ivory);
+  border-radius:3px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,0.15);
+  z-index:1;
+}
+.seal{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:56px; height:56px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #C88B93, var(--rose-deep) 70%);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px;
+  box-shadow:0 6px 16px rgba(181,113,126,0.5);
+  z-index:4;
+  transition:transform 0.6s ease, opacity 0.6s ease;
+}
+.envelope.open .seal{ transform:translate(-50%,-50%) scale(0); opacity:0; }
+.env-hint{
+  font-size:11px; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--charcoal-soft); margin-bottom:50px;
+  opacity:1; transition:opacity 0.5s ease;
+}
+.env-hint.hide{ opacity:0; height:0; margin:0; overflow:hidden; }
+
+.letter-paper{
+  width:100%;
+  max-width:600px;
+  padding:52px 44px;
+  margin-top:10px;
+  display:none;
+  position:relative;
+}
+.letter-paper.show{ display:block; animation:pageIn 1s ease forwards; }
+.letter-paper .to{ font-style:italic; font-size:24px; margin-bottom:22px; color:var(--rose-deep); }
+.letter-body{
+  font-size:16px; line-height:2; font-weight:300; color:var(--charcoal);
+  white-space:pre-wrap;
+}
+.letter-body .cursor{
+  display:inline-block; width:2px; height:16px; background:var(--gold);
+  margin-left:2px; vertical-align:middle;
+  animation:blink 0.9s steps(1) infinite;
+}
+@keyframes blink{ 50%{ opacity:0; } }
+.letter-sign{ margin-top:30px; font-style:italic; font-size:20px; text-align:right; color:var(--charcoal); opacity:0; }
+.letter-sign.show{ opacity:1; transition:opacity 1s ease; }
+
+/* ===================== GALLERY (masonry) ===================== */
+.masonry{
+  columns:3 220px;
+  column-gap:20px;
+  max-width:1100px; margin:0 auto;
+}
+.masonry .card{
+  break-inside:avoid;
+  margin-bottom:20px;
+  padding:22px;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  transition:transform 0.45s cubic-bezier(.2,.7,.2,1);
+}
+.masonry .card:hover{ transform:translateY(-6px); }
+.frame{
+  width:100%;
+  border-radius:10px;
+  background:linear-gradient(150deg, var(--blush-soft), var(--champagne) 120%);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:14px;
+  position:relative;
+  overflow:hidden;
+}
+.frame svg{ width:44%; height:44%; opacity:0.55; }
+.card p{ font-size:12.5px; color:var(--charcoal-soft); font-style:italic; font-family:'Cormorant Garamond',serif; font-size:17px; }
+.h1r{ height:200px; } .h2r{ height:260px; } .h3r{ height:170px; } .h4r{ height:230px; }
+
+.gallery-note{
+  max-width:480px; margin:60px auto 0; text-align:center;
+  font-size:13px; color:var(--charcoal-soft); font-weight:300; line-height:1.8;
+  padding:20px 26px;
+}
+
+/* ===================== VIDEOS ===================== */
+.video-grid{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:26px;
+  max-width:900px; margin:0 auto;
+}
+.video-card{ padding:18px; }
+.video-thumb{
+  aspect-ratio:16/10; border-radius:10px;
+  background:linear-gradient(145deg, var(--champagne), var(--blush-soft));
+  position:relative; display:flex; align-items:center; justify-content:center;
+  margin-bottom:14px; cursor:pointer;
+}
+.play-btn{
+  width:52px; height:52px; border-radius:50%;
+  background:rgba(255,255,255,0.85);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 10px 24px -8px rgba(43,38,34,0.35);
+  transition:transform 0.35s ease;
+}
+.video-thumb:hover .play-btn{ transform:scale(1.1); }
+.play-btn::after{
+  content:''; width:0; height:0;
+  border-top:9px solid transparent; border-bottom:9px solid transparent;
+  border-left:14px solid var(--rose-deep);
+  margin-left:4px;
+}
+.video-card h4{ font-style:italic; font-size:19px; margin-bottom:4px; }
+.video-card span{ font-size:12px; color:var(--charcoal-soft); letter-spacing:0.05em; }
+@media (max-width:700px){ .video-grid{ grid-template-columns:1fr; } }
+
+/* ===================== REASONS ===================== */
+.reasons-wrap{
+  max-width:880px; margin:0 auto;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:22px;
+}
+.reason-card{
+  padding:30px 26px;
+  position:relative;
+}
+.reason-card .mark{
+  font-family:'Cormorant Garamond', serif; font-style:italic; color:var(--gold);
+  font-size:15px; display:block; margin-bottom:10px;
+}
+.reason-card p{ font-size:15.5px; line-height:1.75; color:var(--charcoal); font-weight:300; }
+@media (max-width:700px){ .reasons-wrap{ grid-template-columns:1fr; } }
+
+/* ===================== PLAYLIST ===================== */
+.player{
+  max-width:560px; margin:0 auto;
+  padding:36px 30px;
+}
+.now-playing{
+  display:flex; align-items:center; gap:18px;
+  padding-bottom:24px; margin-bottom:10px;
+  border-bottom:1px solid rgba(199,166,98,0.3);
+}
+.vinyl{
+  width:64px; height:64px; border-radius:50%;
+  background:radial-gradient(circle at center, var(--charcoal) 0 8px, var(--rose-deep) 9px 12px, var(--charcoal) 13px 100%);
+  flex-shrink:0;
+  animation:spin 6s linear infinite paused;
+}
+.player.playing .vinyl{ animation-play-state:running; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.now-info h4{ font-style:italic; font-size:20px; }
+.now-info span{ font-size:12px; color:var(--charcoal-soft); }
+
+.track-list{ list-style:none; }
+.track{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 6px;
+  border-bottom:1px solid rgba(43,38,34,0.06);
+  cursor:pointer;
+  transition:background 0.3s ease;
+}
+.track:last-child{ border-bottom:none; }
+.track:hover{ background:rgba(199,166,98,0.08); }
+.track.active{ color:var(--rose-deep); }
+.track-left{ display:flex; align-items:center; gap:14px; font-size:14px; }
+.track-num{ font-family:'Cormorant Garamond',serif; font-style:italic; color:var(--gold-deep); width:18px; }
+.track-title{ font-weight:400; }
+.track-title small{ display:block; font-size:11px; color:var(--charcoal-soft); font-weight:300; }
+.track-dur{ font-size:12px; color:var(--charcoal-soft); }
+
+.player-controls{
+  display:flex; align-items:center; justify-content:center; gap:22px;
+  margin-top:26px;
+}
+.ctrl-btn{
+  width:20px; height:20px; background:none; border:none; cursor:pointer;
+  color:var(--charcoal); opacity:0.7; transition:opacity 0.3s;
+}
+.ctrl-btn:hover{ opacity:1; }
+.ctrl-btn.main{
+  width:48px; height:48px; border-radius:50%;
+  background:var(--charcoal); color:var(--ivory);
+  display:flex; align-items:center; justify-content:center; opacity:1;
+}
+.playlist-note{ text-align:center; font-size:12px; color:var(--charcoal-soft); margin-top:22px; font-weight:300; }
+
+/* ===================== FOOTER ===================== */
+footer{
+  position:relative; z-index:2;
+  text-align:center; padding:50px 6vw 60px;
+  font-size:12.5px; color:var(--charcoal-soft); font-weight:300;
+  letter-spacing:0.02em;
+}
+footer .amp{ color:var(--rose-deep); font-style:italic; }
+footer .line{ width:36px; height:1px; background:var(--gold); margin:0 auto 18px; }
+
+@media (max-width:600px){
+  .page{ padding:130px 6vw 80px; }
+  .masonry{ columns:1 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <div class="monogram-wrap">
+    <div class="mono-ring"></div>
+    <div class="mono-ring r2"></div>
+    <div class="monogram-text">S<span class="amp">♡</span>E</div>
+  </div>
+  <div class="loader-sub">Our First Chapter</div>
+</div>
+
+<div class="sparkle-field" id="sparkleField"></div>
+
+<header>
+  <div class="brand" onclick="goTo('home')">S<span class="amp">&amp;</span>E</div>
+  <nav class="tabs" id="tabs">
+    <button data-page="home" class="active">Home</button>
+    <button data-page="letter">Letter</button>
+    <button data-page="gallery">Gallery</button>
+    <button data-page="videos">Videos</button>
+    <button data-page="reasons">Reasons I Love You</button>
+    <button data-page="playlist">Playlist</button>
+  </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <section class="page active" id="home">
+    <div class="hero">
+      <span class="eyebrow">One Month Together</span>
+      <h1>Our First Chapter</h1>
+      <p class="lede">Thirty days in, and already a lifetime of small, golden moments. This is our little scrapbook — for every letter, every laugh, and every song that sounded like us.</p>
+      <div class="date-chip glass"><span class="dot"></span> One Month Anniversary</div>
+    </div>
+
+    <div class="home-grid">
+      <div class="home-tile glass" onclick="goTo('letter')">
+        <span class="icon">✎</span>
+        <h3>The Letter</h3>
+        <p>A few words I've been wanting to give you.</p>
+      </div>
+      <div class="home-tile glass" onclick="goTo('gallery')">
+        <span class="icon">✦</span>
+        <h3>Gallery</h3>
+        <p>Little pieces of the month, kept safe.</p>
+      </div>
+      <div class="home-tile glass" onclick="goTo('videos')">
+        <span class="icon">▶</span>
+        <h3>Videos</h3>
+        <p>The moments that moved.</p>
+      </div>
+      <div class="home-tile glass" onclick="goTo('reasons')">
+        <span class="icon">❊</span>
+        <h3>Reasons I Love You</h3>
+        <p>An unfinished, ever-growing list.</p>
+      </div>
+      <div class="home-tile glass" onclick="goTo('playlist')">
+        <span class="icon">♪</span>
+        <h3>Playlist</h3>
+        <p>The songs of our first month.</p>
+      </div>
+      <div class="home-tile glass" onclick="goTo('letter')">
+        <span class="icon">♡</span>
+        <h3>For Ezaan</h3>
+        <p>With all my heart, always.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LETTER -->
+  <section class="page" id="letter">
+    <div class="page-head">
+      <span class="eyebrow">Chapter One</span>
+      <h1>The Letter</h1>
+      <div class="divider"></div>
+    </div>
+    <div class="letter-stage">
+      <div class="envelope" id="envelope" onclick="openEnvelope()">
+        <div class="env-shadow"></div>
+        <div class="env-back"></div>
+        <div class="env-flap"></div>
+        <div class="seal" id="seal">S&amp;E</div>
+      </div>
+      <div class="env-hint" id="envHint">Tap the seal to open</div>
+
+      <div class="letter-paper glass" id="letterPaper">
+        <div class="to">My Ezaan,</div>
+        <div class="letter-body" id="letterBody"></div>
+        <div class="letter-sign" id="letterSign">Yours, always — Sumaira</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="page" id="gallery">
+    <div class="page-head">
+      <span class="eyebrow">Chapter Two</span>
+      <h1>Gallery</h1>
+      <div class="divider"></div>
+    </div>
+    <div class="masonry">
+      <div class="card glass">
+        <div class="frame h2r"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M32 52C18 40 8 30 8 20a12 12 0 0122-8 12 12 0 0122 8c0 10-10 20-24 32z"/></svg></div>
+        <p>day one</p>
+      </div>
+      <div class="card glass">
+        <div class="frame h1r"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="32" cy="32" r="20"/><path d="M32 12v6M32 46v6M12 32h6M46 32h6"/></svg></div>
+        <p>the first coffee</p>
+      </div>
+      <div class="card glass">
+        <div class="frame h3r"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M32 8c6 10-2 14-2 22a10 10 0 0020 0c0-14-10-16-18-22z"/></svg></div>
+        <p>golden hour</p>
+      </div>
+      <div class="card glass">
+        <div class="frame h4r"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 40c8-20 32-20 40 0"/><circle cx="32" cy="24" r="8"/></svg></div>
+        <p>that quiet evening</p>
+      </div>
+      <div class="card glass">
+        <div class="frame h1r"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M32 10c-14 0-22 8-22 18 0 8 6 16 22 26 16-10 22-18 22-26 0-10-8-18-22-18z"/></svg></div>
+        <p>us, laughing</p>
+      </div>
+      <div class="card glass">
+        <div class="frame h2r"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M8 44c8 0 8-8 16-8s8 8 16 8 8-8 16-8"/><circle cx="20" cy="20" r="4"/><circle cx="44" cy="20" r="4"/></svg></div>
+        <p>the little walk</p>
+      </div>
+    </div>
+    <div class="gallery-note glass">This page is ready for your photographs — drop your favourite frames from the month in and let the scrapbook fill itself in.</div>
+  </section>
+
+  <!-- VIDEOS -->
+  <section class="page" id="videos">
+    <div class="page-head">
+      <span class="eyebrow">Chapter Three</span>
+      <h1>Videos</h1>
+      <div class="divider"></div>
+    </div>
+    <div class="video-grid">
+      <div class="video-card glass">
+        <div class="video-thumb"><div class="play-btn"></div></div>
+        <h4>The first hello</h4>
+        <span>00:42</span>
+      </div>
+      <div class="video-card glass">
+        <div class="video-thumb"><div class="play-btn"></div></div>
+        <h4>Dancing in the kitchen</h4>
+        <span>01:15</span>
+      </div>
+      <div class="video-card glass">
+        <div class="video-thumb"><div class="play-btn"></div></div>
+        <h4>You, laughing at nothing</h4>
+        <span>00:28</span>
+      </div>
+      <div class="video-card glass">
+        <div class="video-thumb"><div class="play-btn"></div></div>
+        <h4>Our little tradition</h4>
+        <span>00:57</span>
+      </div>
+    </div>
+    <div class="gallery-note glass">Add your own clips here — this row is built to hold four, but grows for as many as your month needs.</div>
+  </section>
+
+  <!-- REASONS -->
+  <section class="page" id="reasons">
+    <div class="page-head">
+      <span class="eyebrow">Chapter Four</span>
+      <h1>Reasons I Love You</h1>
+      <div class="divider"></div>
+    </div>
+    <div class="reasons-wrap">
+      <div class="reason-card glass"><span class="mark">i.</span><p>The way you remember the small things I mention only once.</p></div>
+      <div class="reason-card glass"><span class="mark">ii.</span><p>How you make even ordinary errands feel like an adventure.</p></div>
+      <div class="reason-card glass"><span class="mark">iii.</span><p>Your patience — with the world, and endlessly, with me.</p></div>
+      <div class="reason-card glass"><span class="mark">iv.</span><p>The sound of your laugh when you try not to laugh.</p></div>
+      <div class="reason-card glass"><span class="mark">v.</span><p>How safe your hand feels around mine, every single time.</p></div>
+      <div class="reason-card glass"><span class="mark">vi.</span><p>The way you say my name like it means something.</p></div>
+      <div class="reason-card glass"><span class="mark">vii.</span><p>Your quiet kindness to everyone, even when no one's watching.</p></div>
+      <div class="reason-card glass"><span class="mark">viii.</span><p>That you chose me, and keep choosing me, every day.</p></div>
+    </div>
+    <div class="gallery-note glass">This list is only a beginning — add a new line whenever the month gives you a new reason.</div>
+  </section>
+
+  <!-- PLAYLIST -->
+  <section class="page" id="playlist">
+    <div class="page-head">
+      <span class="eyebrow">Chapter Five</span>
+      <h1>Playlist</h1>
+      <div class="divider"></div>
+    </div>
+    <div class="player glass" id="player">
+      <div class="now-playing">
+        <div class="vinyl"></div>
+        <div class="now-info">
+          <h4 id="npTitle">Perfect</h4>
+          <span id="npArtist">Ed Sheeran</span>
+        </div>
+      </div>
+      <ul class="track-list" id="trackList">
+        <li class="track active" data-title="Perfect" data-artist="Ed Sheeran">
+          <div class="track-left"><span class="track-num">01</span><span class="track-title">Perfect<small>Ed Sheeran</small></span></div>
+          <span class="track-dur">4:23</span>
+        </li>
+        <li class="track" data-title="All of Me" data-artist="John Legend">
+          <div class="track-left"><span class="track-num">02</span><span class="track-title">All of Me<small>John Legend</small></span></div>
+          <span class="track-dur">4:29</span>
+        </li>
+        <li class="track" data-title="Lover" data-artist="Taylor Swift">
+          <div class="track-left"><span class="track-num">03</span><span class="track-title">Lover<small>Taylor Swift</small></span></div>
+          <span class="track-dur">3:41</span>
+        </li>
+        <li class="track" data-title="Adore You" data-artist="Harry Styles">
+          <div class="track-left"><span class="track-num">04</span><span class="track-title">Adore You<small>Harry Styles</small></span></div>
+          <span class="track-dur">3:27</span>
+        </li>
+        <li class="track" data-title="Golden Hour" data-artist="JVKE">
+          <div class="track-left"><span class="track-num">05</span><span class="track-title">Golden Hour<small>JVKE</small></span></div>
+          <span class="track-dur">3:29</span>
+        </li>
+      </ul>
+      <div class="player-controls">
+        <button class="ctrl-btn" onclick="prevTrack()">⟲</button>
+        <button class="ctrl-btn main" id="playBtn" onclick="togglePlay()">▶</button>
+        <button class="ctrl-btn" onclick="nextTrack()">⟳</button>
+      </div>
+    </div>
+    <div class="playlist-note">Swap in the tracks that were actually playing this month — and link your own audio to bring the player to life.</div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="line"></div>
+  Made with endless love by Sumaira <span class="amp">—</span> For Ezaan, with all my heart.
+</footer>
+
+<script>
+// ---------- Loader ----------
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 2200);
+});
+
+// ---------- Ambient sparkles ----------
+const field = document.getElementById('sparkleField');
+for(let i=0;i<26;i++){
+  const s = document.createElement('div');
+  s.className = 'sparkle';
+  s.style.left = Math.random()*100 + 'vw';
+  s.style.top = Math.random()*100 + 'vh';
+  s.style.animationDelay = (Math.random()*6) + 's';
+  s.style.animationDuration = (5 + Math.random()*4) + 's';
+  field.appendChild(s);
+}
+
+// ---------- Navigation ----------
+const pages = document.querySelectorAll('.page');
+const tabButtons = document.querySelectorAll('nav.tabs button');
+function goTo(id){
+  pages.forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  tabButtons.forEach(b => b.classList.toggle('active', b.dataset.page === id));
+  document.getElementById('tabs').classList.remove('open');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+tabButtons.forEach(b => b.addEventListener('click', () => goTo(b.dataset.page)));
+
+const navToggle = document.getElementById('navToggle');
+navToggle.addEventListener('click', () => document.getElementById('tabs').classList.toggle('open'));
+
+// ---------- Letter: envelope + typewriter ----------
+const letterText = `One month ago, I didn't know a person could feel like a favourite season.
+
+Now every ordinary day has your handwriting on it — the way you say good morning, the songs you hum without noticing, the way you make room for me without ever being asked.
+
+I don't have a grand speech. Just this: thank you for choosing me, for staying easy to love, and for turning thirty ordinary days into the beginning of something I already can't imagine without you.
+
+Here's to every chapter after this one.`;
+
+let opened = false;
+function openEnvelope(){
+  if(opened) return;
+  opened = true;
+  document.getElementById('envelope').classList.add('open');
+  document.getElementById('envHint').classList.add('hide');
+  setTimeout(() => {
+    document.getElementById('letterPaper').classList.add('show');
+    typeLetter();
+  }, 650);
+}
+
+function typeLetter(){
+  const el = document.getElementById('letterBody');
+  el.innerHTML = '<span class="cursor"></span>';
+  let i = 0;
+  const speed = 18;
+  function step(){
+    if(i <= letterText.length){
+      el.innerHTML = letterText.slice(0, i).replace(/\n/g,'<br>') + '<span class="cursor"></span>';
+      i++;
+      setTimeout(step, speed);
+    } else {
+      el.querySelector('.cursor')?.remove();
+      document.getElementById('letterSign').classList.add('show');
+    }
+  }
+  step();
+}
+
+// ---------- Playlist ----------
+const tracks = document.querySelectorAll('.track');
+const npTitle = document.getElementById('npTitle');
+const npArtist = document.getElementById('npArtist');
+const playBtn = document.getElementById('playBtn');
+const playerEl = document.getElementById('player');
+let currentIndex = 0;
+let playing = false;
+
+function selectTrack(idx){
+  currentIndex = (idx + tracks.length) % tracks.length;
+  tracks.forEach(t => t.classList.remove('active'));
+  const t = tracks[currentIndex];
+  t.classList.add('active');
+  npTitle.textContent = t.dataset.title;
+  npArtist.textContent = t.dataset.artist;
+}
+tracks.forEach((t, idx) => t.addEventListener('click', () => { selectTrack(idx); }));
+
+function togglePlay(){
+  playing = !playing;
+  playBtn.textContent = playing ? '❚❚' : '▶';
+  playerEl.classList.toggle('playing', playing);
+}
+function nextTrack(){ selectTrack(currentIndex + 1); }
+function prevTrack(){ selectTrack(currentIndex - 1); }
+</script>
+</body>
+</html>
